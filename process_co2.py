@@ -27,7 +27,7 @@ class Process_CO2 :
         mloa_df = pd.read_csv(self.mloafile,skiprows=80)
         mloa_df=mloa_df.drop(mloa_df.iloc[:,6:],axis=1)
         mloa_df.columns=['Yr','Mn','EDy','Day','CO2','CO2_trend']
-        self.mloa_df=mloa_df[mloa_df.Yr > 1975]
+        self.mloa_df=mloa_df[mloa_df.Yr > 1960]
         self.mloa_df['Date']=pd.to_datetime(dict(year=mloa_df.Yr,month=mloa_df.Mn,day=15))
 
     def create_energy_df (self):
@@ -62,7 +62,7 @@ class Process_CO2 :
     def limit_dates (self, min_year, max_year):
         min = datetime.date (min_year,1,1)
         max = datetime.date (max_year,12,31)   
-        newdf = self.mloa_df[(self.mloa_df.Yr > min_year) & (self.mloa_df.Yr<=max_year)]
+        newdf = self.mloa_df[(self.mloa_df.Yr >= min_year) & (self.mloa_df.Yr<=max_year)]
         return newdf
 
 # my_co2 = Process_CO2()

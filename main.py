@@ -11,7 +11,7 @@ from process_co2 import *
 
 # Mauna Loa CO2 Measurements
 pc = Process_CO2() 
-mloa_df = pc.limit_dates(1970,2022)
+mloa_df = pc.limit_dates(1960,2022)
 #print (pc.co2_comp_df.columns)
 
 fig_mloa=px.line(pc.mloa_df,x='Date',y=['CO2','CO2_trend'],title='Mauna Loa CO2 Measurements',range_y=[300,450]
@@ -84,9 +84,14 @@ app.layout = dbc.Container([
             html.Div(["Data is from the ",
                 html.A("Our World in Data", 
                    href='https://github.com/owid/co2-data', target="_blank"), 
-                " CO2 Data Github Page"
+                " CO2 Data Github Page.",
+                " ",
+                html.A("This project homepage", 
+                       href='https://ourworldindata.org/co2-and-greenhouse-gas-emissions',
+                       target="_blank"),
+                " fully describes their dataset and has a wealth of CO2 information"
             ])
-        ],xs=12,sm=9,md=9)
+        ],xs=12,sm=9,md=9,className='bg-light text-dark border')
     ], justify='evenly',class_name="mb-3"
 
     )
@@ -104,8 +109,22 @@ def update_co2_ts(count_selected,yearrange):
     tmp_df = pc.df_countries[(pc.df_countries['country'].isin(count_selected))&
             (pc.df_countries.year>=yearrange[0])&(pc.df_countries.year<=yearrange[1])]
     tmp_fig = px.line(tmp_df,x='year',y='co2',color='country')
+    tmp_fig.update_layout(yaxis={'title':'MTonnes CO2'},legend={'title':'CO2 Production'},plot_bgcolor='rgb(210,210,210)')
     return(tmp_fig)
 
+@app.callback(
+    Output('mloa_graph','figure')
+    ,
+    [Input('year_rangeslider','value')]
+     
+)
+def update_mloa(yearrange):
+    min_year= yearrange[0]
+    max_year= yearrange[1]
+    tmp_df = pc.mloa_df[(pc.mloa_df.Yr >= min_year) & (pc.mloa_df.Yr<=max_year)]
+    tmp_fig=px.line(tmp_df,x='Date',y=['CO2','CO2_trend'],title='Mauna Loa CO2 Measurements',range_y=[300,450])
+    tmp_fig.update_layout(yaxis={'title':'CO2 PPM'},legend={'title':'Component'},plot_bgcolor='rgb(200,200,200)')
+    return(tmp_fig)
 
 if __name__=="__main__":
     app.run_server(debug=True)
