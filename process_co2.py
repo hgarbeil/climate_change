@@ -6,6 +6,9 @@ import datetime
 import panel as pn
 
 countries = ['World','United States','Russia','China','Australia','Japan','Germany','India','United Kingdom', 'France','Indonesia','Iceland']
+greenhouse_gases=['CarbonDioxide','Methane','NitrousOxide','FluorinatedGases']
+gases_pct=[79.4,11.5,6.2,3.0]
+
 
 class Process_CO2 :
 

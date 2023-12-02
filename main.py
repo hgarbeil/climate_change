@@ -18,7 +18,14 @@ fig_mloa=px.line(pc.mloa_df,x='Date',y=['CO2','CO2_trend'],title='Mauna Loa CO2 
         )
 fig_mloa.update_layout(yaxis={'title':'CO2 PPM'},legend={'title':'Component'},plot_bgcolor='rgb(200,200,0)')
 
+fig_compos=px.pie(names=greenhouse_gases,values=gases_pct,title='Human-Caused Greenhouse Gas Composition')
+
 fig_ts = px.line(pc.df_countries,x='year',y='co2',color='country')
+
+tmp_df = pc.df_countries[(pc.df_countries.year == 2018)]
+fig_makeup = px.bar(tmp_df, x='country',y=['coal_co2','gas_co2','oil_co2'],
+    barmode='group',
+    title='CO2 Makeup')
 
 ## Define the app and hook in bootstrap
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP],meta_tags=[
@@ -48,7 +55,7 @@ app.layout = dbc.Container([
                     2000:'2000',
                     #2010:'2010',
                     2020:'2020'})
-        ],xs=11,sm=2,md=2,className='bg-light text-dark border'),
+        ],xs=11,sm=9,md=2,className='bg-light text-dark border '),
         dbc.Col([
            
             
@@ -60,9 +67,20 @@ app.layout = dbc.Container([
             )
         ],
             
-            xs=12,sm=9,md=9,className='bg-light text-dark border')
+        xs=12,sm=10,md=5,className='bg-light text-dark border'),
+        dbc.Col([
+            dcc.Graph(id='ghg_compos', figure=fig_compos),
+            html.Div(["Data is from NRDC ",
+                html.A("Greenhouse Effect 101 ", 
+                   href='https://www.nrdc.org/stories/greenhouse-effect-101#whatis', target="_blank")
+            ]
+            )
+        ],
+            
+        xs=12,sm=12,md=5,className='bg-light text-dark border')
 
-    ], justify='evenly',className="mb-3"),
+    ], justify='evenly',className="mb-5"),
+
     dbc.Row([
         dbc.Col([
             html.H5("CO2 Production",className='text-center mb-2 text-primary'),
@@ -78,7 +96,7 @@ app.layout = dbc.Container([
                     2020:'2020'}),
             dcc.Checklist(countries,value=['World','China','United States'],id='co2_countries_clist')
 
-        ],xs=11,sm=2,md=2,className='bg-light text-dark border'),
+        ],xs=11,sm=11,md=2,className='bg-light text-dark border'),
         dbc.Col([
             dcc.Graph(id='co2_ts_graph',figure=fig_ts),
             html.Div(["Data is from the ",
@@ -91,7 +109,13 @@ app.layout = dbc.Container([
                        target="_blank"),
                 " fully describes their dataset and has a wealth of CO2 information"
             ])
-        ],xs=12,sm=9,md=9,className='bg-light text-dark border')
+        ],xs=12,sm=12,md=5,className='bg-light text-dark border'),
+        dbc.Col([
+
+            dcc.Graph(id='co2_makeup', figure=fig_makeup)
+
+        ],xs=12,sm=12,md=5,className='bg-light text-dark border')
+
     ], justify='evenly',class_name="mb-3"
 
     )
@@ -99,7 +123,8 @@ app.layout = dbc.Container([
 
 
 @app.callback(
-    Output('co2_ts_graph','figure')
+    [Output('co2_ts_graph','figure'),
+     Output('co2_makeup','figure')]
     ,
     [Input('co2_countries_clist','value'),
      Input('year_rangeslider_ts',"value")]
@@ -108,9 +133,13 @@ app.layout = dbc.Container([
 def update_co2_ts(count_selected,yearrange):
     tmp_df = pc.df_countries[(pc.df_countries['country'].isin(count_selected))&
             (pc.df_countries.year>=yearrange[0])&(pc.df_countries.year<=yearrange[1])]
+    tmpyr_df = tmp_df[(tmp_df.country.isin(count_selected)) & (tmp_df.year==2018)]
     tmp_fig = px.line(tmp_df,x='year',y='co2',color='country')
     tmp_fig.update_layout(yaxis={'title':'MTonnes CO2'},legend={'title':'CO2 Production'},plot_bgcolor='rgb(210,210,210)')
-    return(tmp_fig)
+    tmp_fig1 = px.bar(tmpyr_df, x='country',y=['coal_co2','gas_co2','oil_co2'],
+        barmode='group',title='CO2 Sources')
+    tmp_fig1.update_layout(yaxis={'title':'MTonnes CO2'})
+    return(tmp_fig, tmp_fig1)
 
 @app.callback(
     Output('mloa_graph','figure')
