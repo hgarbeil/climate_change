@@ -8,6 +8,9 @@ import panel as pn
 countries = ['World','United States','Russia','China','Australia','Japan','Germany','India','United Kingdom', 'France','Indonesia','Iceland']
 greenhouse_gases=['CarbonDioxide','Methane','NitrousOxide','FluorinatedGases']
 gases_pct=[79.4,11.5,6.2,3.0]
+country_component =['country','year','iso_code','population',
+            'co2','co2_per_gdp','co2_per_capita','cement_co2','coal_co2','oil_co2','gas_co2',
+            'methane']
 
 
 class Process_CO2 :
@@ -59,7 +62,8 @@ class Process_CO2 :
         df_countries=df_countries_full[df_countries_full.year==2018]
         self.df_countries = df_major
         self.co2_comp_world=df[df['country']=='World']
-        print(self.co2_comp_world.head(20))
+        self.df_countries_full=df_countries_full[country_component]
+        print(self.co2_comp_world.columns)
         self.co2_comp_df = df
         
     def limit_dates (self, min_year, max_year):

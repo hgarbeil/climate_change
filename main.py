@@ -9,6 +9,10 @@ from process_co2 import *
 
  
 
+component_map=['population',
+            'co2','co2_per_gdp','co2_per_capita','cement_co2','coal_co2','oil_co2','gas_co2',
+            'methane']
+
 # Mauna Loa CO2 Measurements
 pc = Process_CO2() 
 mloa_df = pc.limit_dates(1960,2022)
@@ -22,8 +26,12 @@ fig_compos=px.pie(names=greenhouse_gases,values=gases_pct,title='Human-Caused Gr
 
 fig_ts = px.line(pc.df_countries,x='year',y='co2',color='country')
 
+df_temp = pc.df_countries_full[pc.df_countries_full.year==2020]
+fig_choro=px.choropleth(df_temp,locations='iso_code',color='co2',
+    color_continuous_scale=px.colors.sequential.Plasma, range_color=(0,10000))
+
 tmp_df = pc.df_countries[(pc.df_countries.year == 2018)]
-fig_makeup = px.bar(tmp_df, x='country',y=['coal_co2','gas_co2','oil_co2'],
+fig_makeup = px.bar(tmp_df, x='country',y=['coal_co2','gas_co2','oil_co2','cement_co2'],
     barmode='group',
     title='CO2 Makeup')
 
@@ -39,7 +47,9 @@ app.layout = dbc.Container([
     dbc.Row([
          dbc.Col([
             html.H1('Atmospheric CO2', className='text-center text-primary mb-4')
+
          ], width=12)
+
          
 
     ]),
@@ -79,7 +89,8 @@ app.layout = dbc.Container([
             
         xs=12,sm=12,md=5,className='bg-light text-dark border')
 
-    ], justify='evenly',className="mb-5"),
+    ], justify='evenly',className="mb-3"),
+    
 
     dbc.Row([
         dbc.Col([
@@ -118,8 +129,17 @@ app.layout = dbc.Container([
 
     ], justify='evenly',class_name="mb-3"
 
-    )
-],fluid=True)
+    ),
+    dbc.Row([
+        dbc.Col([
+            dcc.Dropdown(component_map,'co2',id='mapvar_ddown')
+
+        ],xs=12,sm=12,md=2,className='bg-light text-dark border'),
+        dbc.Col([
+            dcc.Graph(id='map_co2',figure=fig_choro)
+        ],xs=12,sm=12,md=10,className='bg-light text-dark border')
+    ])
+],fluid=True,style={"backgroundColor":"yellow"})
 
 
 @app.callback(
@@ -136,7 +156,7 @@ def update_co2_ts(count_selected,yearrange):
     tmpyr_df = tmp_df[(tmp_df.country.isin(count_selected)) & (tmp_df.year==2018)]
     tmp_fig = px.line(tmp_df,x='year',y='co2',color='country')
     tmp_fig.update_layout(yaxis={'title':'MTonnes CO2'},legend={'title':'CO2 Production'},plot_bgcolor='rgb(210,210,210)')
-    tmp_fig1 = px.bar(tmpyr_df, x='country',y=['coal_co2','gas_co2','oil_co2'],
+    tmp_fig1 = px.bar(tmpyr_df, x='country',y=['coal_co2','gas_co2','oil_co2','cement_co2'],
         barmode='group',title='CO2 Sources')
     tmp_fig1.update_layout(yaxis={'title':'MTonnes CO2'})
     return(tmp_fig, tmp_fig1)
