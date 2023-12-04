@@ -59,7 +59,6 @@ class Process_CO2 :
         df=df.fillna(0)
         df_major=df[(df['country'].isin(countries)) & (df['year']>1940)]
         df_countries_full=df[df.iso_code!='0']
-        df_countries=df_countries_full[df_countries_full.year==2018]
         self.df_countries = df_major
         self.co2_comp_world=df[df['country']=='World']
         self.df_countries_full=df_countries_full[country_component]
