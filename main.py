@@ -1,6 +1,5 @@
 
 import pandas as pd
-import panel as pn
 import numpy as np
 import plotly.express as px
 from dash import dash, dcc, html, Output, Input, dash_table
