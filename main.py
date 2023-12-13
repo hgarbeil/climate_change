@@ -205,15 +205,12 @@ def update_mloa(yearrange):
     ]
 )
 def update_map(year, comp):
-    print(year,comp)
     df_temp = pc.df_countries_full[(pc.df_countries_full.year==year) & (pc.df_countries_full.country!='World')]
     maxval = df_temp[df_temp.country.isin(countries_major)][comp].max()
     fig_choro=px.choropleth(df_temp,locations='iso_code',color=comp,
         color_continuous_scale=px.colors.sequential.Plasma,range_color=[0,maxval],hover_data=['country',comp])
     
-    print(df_temp.head(100))
     newcols=df_temp[df_temp.iso_code!=0]
-    print(newcols.columns)
     if comp != 'co2' :
         newcols = newcols[['country',comp,'co2']]
     else :
