@@ -46,6 +46,8 @@ app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP],meta_tags=
     ]
 )
 
+server = app.server
+
 
 
 app.layout = dbc.Container([
@@ -242,6 +244,5 @@ def update_map(year, comp):
 
     return(fig_choro,dtable)
 
-
-if __name__=="__main__":
-    app.run_server(debug=True)
+# if __name__=="__main__":
+#     app.run_server(debug=True)
