@@ -62,7 +62,7 @@ class Process_CO2 :
         self.df_countries = df_major
         self.co2_comp_world=df[df['country']=='World']
         self.df_countries_full=df_countries_full[country_component]
-        print(self.co2_comp_world.columns)
+        #print(self.co2_comp_world.columns)
         self.co2_comp_df = df
         
     def limit_dates (self, min_year, max_year):

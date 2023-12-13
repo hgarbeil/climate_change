@@ -3,7 +3,7 @@ import pandas as pd
 import panel as pn
 import numpy as np
 import plotly.express as px
-from dash import dash, dcc, html, Output, Input
+from dash import dash, dcc, html, Output, Input, dash_table
 import dash_bootstrap_components as dbc
 from process_co2 import *
 
@@ -14,10 +14,15 @@ component_map=['population',
             'co2','co2_per_gdp','co2_per_capita','cement_co2','coal_co2','oil_co2','gas_co2',
             'methane']
 
+CONTENT_STYLE = {
+    # "margin-left": "2rem",
+    # "margin-right": "2rem",
+    "padding": "2rem 1rem",
+}
+
 # Mauna Loa CO2 Measurements
 pc = Process_CO2() 
 mloa_df = pc.limit_dates(1960,2022)
-#print (pc.co2_comp_df.columns)
 
 fig_mloa=px.line(pc.mloa_df,x='Date',y=['CO2','CO2_trend'],title='Mauna Loa CO2 Measurements',range_y=[300,450]
         )
@@ -146,7 +151,11 @@ app.layout = dbc.Container([
                 html.A("Our World in Data", 
                    href='https://github.com/owid/co2-data', target="_blank"), 
                 " CO2 Data Github Page."])
-        ],xs=12,sm=12,md=10,className='bg-light text-dark border')
+        ],xs=12,sm=12,md=5,className='bg-light text-dark border'),
+        dbc.Col([
+            html.Div(id='table1')
+            #dash_table.DataTable(df_temp[['country','year','co2']].to_dict('records'), [{"name": i, "id": i} for i in ['country','year','co2']])
+        ],xs=12,sm=12,md=5,className='bg-light text-dark border',style=CONTENT_STYLE)
     ])
 ],fluid=True,style={"backgroundColor":'rgb(204,204,204)'})
 
@@ -185,7 +194,10 @@ def update_mloa(yearrange):
     return(tmp_fig)
 
 @app.callback(
-    Output('map_co2','figure'),
+    [
+        Output('map_co2','figure'),
+        Output('table1','children')
+    ],
     [
         Input('mapyr_ddown','value'),
         Input('mapvar_ddown','value')
@@ -196,8 +208,40 @@ def update_map(year, comp):
     df_temp = pc.df_countries_full[(pc.df_countries_full.year==year) & (pc.df_countries_full.country!='World')]
     maxval = df_temp[df_temp.country.isin(countries_major)][comp].max()
     fig_choro=px.choropleth(df_temp,locations='iso_code',color=comp,
-        color_continuous_scale=px.colors.sequential.Plasma,range_color=[0,maxval])
-    return(fig_choro)
+        color_continuous_scale=px.colors.sequential.Plasma,range_color=[0,maxval],hover_data=['country',comp])
+    
+    print(df_temp.head(100))
+    newcols=df_temp[df_temp.iso_code!=0]
+    print(newcols.columns)
+    if comp != 'co2' :
+        newcols = newcols[['country',comp,'co2']]
+    else :
+        newcols = newcols[['country',comp,'methane']]
+    newcols=newcols.sort_values(comp,ascending=False)[0:15]
+    dtable = dash_table.DataTable(newcols.to_dict('records'), [{"name": i, "id": i} for i in newcols.columns],
+        style_cell={'textAlign': 'left'},
+        style_cell_conditional=[
+        {
+            'if': {'column_id': 'country'},
+            'textAlign': 'left'
+        }],
+        style_data_conditional=[
+        {
+            'if': {'row_index': 'odd'},
+            'backgroundColor': 'rgb(220, 220, 220)',
+        }
+        ],
+        style_header={
+        'backgroundColor': 'rgb(210, 210, 80)',
+        'color': 'black',
+        'fontWeight': 'bold'
+         }
+        
+    )
+
+    print (newcols.head(10))
+
+    return(fig_choro,dtable)
 
 
 if __name__=="__main__":
