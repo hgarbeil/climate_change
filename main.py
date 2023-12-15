@@ -53,7 +53,7 @@ server = app.server
 app.layout = dbc.Container([
     dbc.Row([
          dbc.Col([
-            html.H1('Atmospheric CO2', className='text-center text-primary mb-2 mt-2')
+            html.H1('Climate Change and Atmospheric CO2', className='text-center text-primary mb-2 mt-2')
 
          ], width=12)
 
