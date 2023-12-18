@@ -241,5 +241,5 @@ def update_map(year, comp):
 
     return(fig_choro,dtable)
 
-if __name__=="__main__":
-    app.run_server(debug=True)
+# if __name__=="__main__":
+#     app.run_server(debug=True)
