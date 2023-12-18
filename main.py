@@ -78,7 +78,7 @@ app.layout = dbc.Container([
             
             dcc.Graph(id='mloa_graph', figure=fig_mloa),
             html.Div(["Data is from the ",
-                html.A("NOAA Global MOnitoring Laboratory", 
+                html.A("NOAA Global Monitoring Laboratory", 
                    href='https://gml.noaa.gov/ccgg/trends/gl_data.html', target="_blank")
             ]
             )
@@ -190,7 +190,7 @@ def update_mloa(yearrange):
     min_year= yearrange[0]
     max_year= yearrange[1]
     tmp_df = pc.mloa_df[(pc.mloa_df.Yr >= min_year) & (pc.mloa_df.Yr<=max_year)]
-    tmp_fig=px.line(tmp_df,x='Date',y=['CO2','CO2_trend'],title='Mauna Loa CO2 Measurements',range_y=[300,450])
+    tmp_fig=px.line(tmp_df,x='Date',y=['CO2','CO2_trend'],title='Global CO2 Concentration',range_y=[300,450])
     tmp_fig.update_layout(yaxis={'title':'CO2 PPM'},legend={'title':'Component'},plot_bgcolor='rgb(200,200,200)')
     return(tmp_fig)
 
@@ -241,5 +241,5 @@ def update_map(year, comp):
 
     return(fig_choro,dtable)
 
-# if __name__=="__main__":
-#     app.run_server(debug=True)
+if __name__=="__main__":
+    app.run_server(debug=True)

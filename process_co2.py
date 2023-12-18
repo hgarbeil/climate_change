@@ -31,11 +31,11 @@ class Process_CO2 :
         
 
     def create_df (self):
-        mloa_df = pd.read_csv(self.mloafile,skiprows=40,delimiter=r"\s+", nrows=500)
+        mloa_df = pd.read_csv(self.mloafile,skiprows=40,delimiter=r"\s+")
         print(mloa_df.head())
         mloa_df=mloa_df.drop(mloa_df.iloc[:,7:],axis=1)
         mloa_df.columns=['Yr','Mn','DecYr','CO2','CO2_unc','CO2_trend','trend_unc']
-        print(mloa_df.Yr)
+        
         #self.mloa_df=mloa_df[mloa_df.Yr > 1960]
         tmpdate=pd.to_datetime(dict(year=mloa_df.Yr,month=mloa_df.Mn,day=15))
         print(type(tmpdate))
