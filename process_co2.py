@@ -19,7 +19,8 @@ class Process_CO2 :
 
     def __init__(self) :
         # maunaloa data
-        self.mloafile = 'https://scrippsco2.ucsd.edu/assets/data/atmospheric/stations/in_situ_co2/monthly/monthly_in_situ_co2_mlo.csv'
+        #self.mloafile = 'https://scrippsco2.ucsd.edu/assets/data/atmospheric/stations/in_situ_co2/monthly/monthly_in_situ_co2_mlo.csv'
+        self.mloafile = 'https://gml.noaa.gov/webdata/ccgg/trends/co2/co2_mm_gl.txt'
         self.mloa_df = ''
         self.mix_df = ''
         self.create_df()
@@ -30,11 +31,16 @@ class Process_CO2 :
         
 
     def create_df (self):
-        mloa_df = pd.read_csv(self.mloafile,skiprows=80)
-        mloa_df=mloa_df.drop(mloa_df.iloc[:,6:],axis=1)
-        mloa_df.columns=['Yr','Mn','EDy','Day','CO2','CO2_trend']
-        self.mloa_df=mloa_df[mloa_df.Yr > 1960]
-        self.mloa_df['Date']=pd.to_datetime(dict(year=mloa_df.Yr,month=mloa_df.Mn,day=15))
+        mloa_df = pd.read_csv(self.mloafile,skiprows=40,delimiter=r"\s+", nrows=500)
+        print(mloa_df.head())
+        mloa_df=mloa_df.drop(mloa_df.iloc[:,7:],axis=1)
+        mloa_df.columns=['Yr','Mn','DecYr','CO2','CO2_unc','CO2_trend','trend_unc']
+        print(mloa_df.Yr)
+        #self.mloa_df=mloa_df[mloa_df.Yr > 1960]
+        tmpdate=pd.to_datetime(dict(year=mloa_df.Yr,month=mloa_df.Mn,day=15))
+        print(type(tmpdate))
+        mloa_df['Date']=tmpdate
+        self.mloa_df=mloa_df
 
     def create_energy_df (self):
         dfmix = pd.read_csv(self.energyfile)

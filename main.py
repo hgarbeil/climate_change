@@ -23,7 +23,7 @@ CONTENT_STYLE = {
 pc = Process_CO2() 
 mloa_df = pc.limit_dates(1960,2022)
 
-fig_mloa=px.line(pc.mloa_df,x='Date',y=['CO2','CO2_trend'],title='Mauna Loa CO2 Measurements',range_y=[300,450]
+fig_mloa=px.line(pc.mloa_df,x='Date',y=['CO2','CO2_trend'],title='Global CO2 Concentration',range_y=[300,450]
         )
 fig_mloa.update_layout(yaxis={'title':'CO2 PPM'},legend={'title':'Component'},plot_bgcolor='rgb(200,200,0)')
 
@@ -62,9 +62,9 @@ app.layout = dbc.Container([
     ]),
     dbc.Row([
         dbc.Col([
-            html.H5("Mauna Loa CO2",className='text-center mb-2 mt-2 text-primary'),
+            html.H5("Global CO2",className='text-center mb-2 mt-2 text-primary'),
             html.H6("Year Range : ",className='text-center mb-2 text-primary'),
-            dcc.RangeSlider(1960,2020,1,value=[1960,2020],id='year_rangeslider',
+            dcc.RangeSlider(1980,2020,1,value=[1960,2020],id='year_rangeslider',
                 marks={
                     #1970:'1970',
                     1980:'1980',
@@ -78,8 +78,8 @@ app.layout = dbc.Container([
             
             dcc.Graph(id='mloa_graph', figure=fig_mloa),
             html.Div(["Data is from the ",
-                html.A("Scripps UCSD CO2 Program", 
-                   href='https://scrippsco2.ucsd.edu/data/atmospheric_co2/primary_mlo_co2_record.html', target="_blank")
+                html.A("NOAA Global MOnitoring Laboratory", 
+                   href='https://gml.noaa.gov/ccgg/trends/gl_data.html', target="_blank")
             ]
             )
         ],
